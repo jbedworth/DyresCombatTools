@@ -171,6 +171,9 @@ Ported from Dyre's Tank Tools' checklist; none is checked in client yet.
       within about 2 seconds, without touching Growl (John found it missing,
       2026-11-25; the fix confirmed in client the same day).
 - [ ] Warlock with the Voidwalker's Torment on autocast: the same.
+- [ ] `/dyre unlock` on a Warlock: the sample says "Torment and Suffering
+      are on autocast in a group. Turn it off."; on a Hunter, "Growl is
+      ..." (1.0.1).
 - [ ] With Dyre's Buff Reminders installed: one warning, not two (once DBR
       yields through "warn:petTaunt").
 - [ ] `/dyre unlock` shows the sample message box to move.

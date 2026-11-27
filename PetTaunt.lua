@@ -94,9 +94,34 @@ function DTT.PetTauntText()
     end
     local on = TauntsOn()
     if #on > 0 then
-        return "Pet taunt on", table.concat(on, " and ") .. (#on > 1 and " are" or " is")
-            .. " on autocast in a group. Turn it off."
+        return DTT.PetTauntWords(on)
     end
+end
+
+-- The warning's title and line for these taunt names; the live warning and
+-- the layout-mode sample both use it, so they read the same.
+function DTT.PetTauntWords(names)
+    return "Pet taunt on", table.concat(names, " and ") .. (#names > 1 and " are" or " is")
+        .. " on autocast in a group. Turn it off."
+end
+
+-- The sample's taunts by class: rank 1's ID, and a plain English name when
+-- the client gives none (or a secret). Growl; the Voidwalker's Torment and
+-- Suffering.
+DTT.PET_TAUNT_SAMPLES = {
+    HUNTER = {{2649, "Growl"}},
+    WARLOCK = {{3716, "Torment"}, {17735, "Suffering"}},
+}
+
+-- The layout-mode sample for your class (John, 2026-11-27: a Warlock saw
+-- "Growl"), worded as the live warning.
+function DTT.PetTauntSample()
+    local names = {}
+    for _, taunt in ipairs(DTT.PET_TAUNT_SAMPLES[DTT.classFile] or DTT.PET_TAUNT_SAMPLES.HUNTER) do
+        local name = SpellName(taunt[1])
+        names[#names + 1] = type(name) == "string" and name ~= "" and name or taunt[2]
+    end
+    return DTT.PetTauntWords(names)
 end
 
 local function ShowPop(title, line)
@@ -158,8 +183,9 @@ local function BuildPop()
         onUnlock = function(_, unlocked)
             if unlocked then
                 pop.fader:Stop()
-                pop.title:SetText("Pet taunt on")
-                pop.line:SetText("Growl is on autocast in a group. Turn it off.")
+                local title, line = DTT.PetTauntSample()
+                pop.title:SetText(title)
+                pop.line:SetText(line)
                 pop.content:SetAlpha(1)
                 pop.content:Show()
             elseif not pop.fader:IsPlaying() then

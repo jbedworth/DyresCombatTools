@@ -1203,36 +1203,21 @@ function ns.AddSwingSettings(pageCategory, pageLayout)
     category, layout = pageCategory, pageLayout
     Section("Swing Timer")
     Dropdown("DYRE_SWING_SHOW", "Show", "show", Swing.SHOW_MODES, Swing.SHOW_LABELS, Swing.DEFAULT_SHOW,
-        "A bar for each swing: main hand, off hand (once it swings), and ranged (with a ranged weapon), in a "
-        .. "box that turns green or red by your target's range.\n\nIn combat: shown in combat. Always: shown "
-        .. "all the time. Off: never shown, also while frames are unlocked.\n\nThe bars need WoW: Forever's "
-        .. "swing event; on Classic Era only the range box works.")
+        "Shows the swing timer in combat, all the time, or never.")
     OpacitySlider("DYRE_SWING_OPACITY_COMBAT", "Opacity in combat", "combatOpacity",
-        "How solid the swing timer is in combat. It changes at once.")
+        "How solid the swing timer is in combat.")
     OpacitySlider("DYRE_SWING_OPACITY_IDLE", "Opacity out of combat", "idleOpacity",
-        "How solid the swing timer is out of combat, with Show set to Always. While frames are unlocked it is "
-        .. "always solid, to place it.")
+        "How solid the swing timer is out of combat.")
     Checkbox("DYRE_SWING_IN_USE", "Only bars in use", "inUse", true,
-        "On: a bar shows only while you use it (a swing running, or just ended), and the frame grows and "
-        .. "shrinks to fit. One bar always stays: ranged for a Hunter, Mage, Warlock, or Priest with a ranged "
-        .. "weapon, else main hand. A Hunter shooting sees the ranged bar; in melee range, or swinging, the "
-        .. "main-hand bar joins it. Off: every bar your weapons can use, all the time.")
+        "Shows only the bars you are using, and the frame grows and shrinks to fit.")
     Checkbox("DYRE_SWING_RANGE", "Range box", "range", true,
-        "The box around the bars turns green in range and red out of range, with the state as text: RANGE, "
-        .. "MELEE, DEAD ZONE (too close for a bow, gun, crossbow, thrown weapon, or Auto Shot; not a wand), "
-        .. "TOO CLOSE, or TOO FAR.\n\nMELEE and DEAD ZONE apart need your class's melee check (a Hunter: Wing "
-        .. "Clip, from level 12). Until then, TOO CLOSE covers both, and MELEE shows while your melee swings "
-        .. "keep landing.")
+        "Colors the box around the bars green in range and red out of range, with the range state as text.")
     Checkbox("DYRE_SWING_HOLD", "Auto Shot: hold still zone", "hold", true,
-        "Hunters: the last half second of the ranged bar is red. That is Auto Shot's cast: moving then delays "
-        .. "your shot. The bar's label says HOLD STILL, or STOP while you move.")
+        "Hunters: colors the end of the ranged bar red, where moving delays your Auto Shot.")
     Checkbox("DYRE_SWING_CLIP", "Auto Shot: clip zones", "clip", true,
-        "Hunters: orange on the ranged bar before the red zone, one shade for Aimed Shot and one for Sniper "
-        .. "Shot (when you know them). Starting that cast in its orange zone overlaps Auto Shot's cast and "
-        .. "delays your next Auto Shot; start it before the orange. The zones follow your cast times, haste "
-        .. "included.")
+        "Hunters: colors the part of the ranged bar orange where Aimed Shot or Sniper Shot delays your next Auto Shot.")
     Dropdown("DYRE_SWING_THEME", "Theme", "theme", Swing.THEME_KEYS, Swing.THEME_LABELS, "gold",
-        "Gold and black: the game's own look. Tactical black and red: flat bars, a thin edge.")
+        "Picks the gold and black look or the tactical black and red look.")
     if widget then
         ns.toolkit.AddWidgetSettings(category, layout, widget, {
             labels = {scale = "Swing timer size (%)", width = "Swing timer width"}})

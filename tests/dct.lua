@@ -38,7 +38,7 @@ test("with a Toolkit that has no tank features, DCT runs: commands, owners, a pa
     end
     equal(state.toolkit.KindOwner("threat"), "DyresCombatTools")
     equal(state.category.name, "Threat and Combat Tools", "a page under Dyre's AddOns")
-    contains(state.find("Dyre's Threat and Combat Tools 1.0.0 by Dyre"), "/dct opens the settings")
+    contains(state.find("Dyre's Threat and Combat Tools 1.0.1 by Dyre"), "/dct opens the settings")
     equal(state.env.BINDING_HEADER_DYRESCOMBATTOOLS, nil, "no binding header of DCT's")
 end)
 

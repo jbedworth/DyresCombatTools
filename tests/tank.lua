@@ -301,7 +301,7 @@ local function fixture(options)
                     Author = "Dyre"})[field]
             end
             if name ~= ADDON then return nil end
-            return ({Title = "Dyre's Threat and Combat Tools", Version = "1.0.0", Author = "Dyre"})[field]
+            return ({Title = "Dyre's Threat and Combat Tools", Version = "1.0.1", Author = "Dyre"})[field]
         end,
         IsAddOnLoaded = function(name) return (options.loaded or {})[name] == true, false end,
     }
@@ -405,7 +405,8 @@ local function fixture(options)
             return {Add = function(_, value, label) data[#data + 1] = {value = value, label = label} end,
                 GetData = function() return data end}
         end,
-        CreateSlider = function(_, setting, sliderOptions)
+        CreateSlider = function(_, setting, sliderOptions, tooltip)
+            setting.tooltip = tooltip
             local initializer = {options = sliderOptions, InitFrame = function() end}
             state.sliders = state.sliders or {}
             state.sliders[setting.variable] = initializer
@@ -531,7 +532,7 @@ test("a client without a threat API keeps the features off, quiet at login, and 
     local state = fixture({remove = {"UnitDetailedThreatSituation"}})
     equal(state.ns.available, false)
     equal(#state.messages, 1, "nothing said at login but the welcome line")
-    contains(state.messages[1], "Dyre's Threat and Combat Tools 1.0.0")
+    contains(state.messages[1], "Dyre's Threat and Combat Tools 1.0.1")
     state.env.SlashCmdList.DYRESCOMBATTOOLS("pull")
     contains(state.find("off on this client"), "lacks UnitDetailedThreatSituation")
     state.env.SlashCmdList.DYRESCOMBATTOOLS("debug")
@@ -3007,10 +3008,7 @@ test("Dyre's countdown on screen: a checkbox, on by default; hidden with a boss 
     equal(setting.default, true)
     equal(setting:GetValue(), true)
     equal(setting.choices, nil, "a checkbox, not a dropdown")
-    contains(setting.tooltip, "Sending: /dct pull and the PULL button always use the best path: Deadly Boss Mods, "
-        .. "then BigWigs, then the game's countdown, then Dyre's own pull message.")
-    contains(setting.tooltip, "On screen:")
-    contains(setting.tooltip, "/dyre unlock")
+    equal(setting.tooltip, "Shows Dyre's big pull countdown on screen when no boss mod shows one.")
     state.fire("START_PLAYER_COUNTDOWN", 1, 10, 10)
     equal(Shown(state), "10")
     setting:SetValue(false)
@@ -3123,10 +3121,6 @@ test("BigWigs always shows its own pull bar: Dyre's steps aside, also with DBM's
     equal(state.ns.BossModShowingPull(), "bigwigs")
     state.fire("START_PLAYER_COUNTDOWN", 1, 10, 10)
     equal(Shown(state), nil)
-    local tooltip = state.settings.DYRE_PULL_DISPLAY.tooltip
-    contains(tooltip, "Do not show Pull/Break Timer bar")
-    contains(tooltip, "/dbm > Global Disables & Filters > Disable DBM Features")
-    contains(tooltip, "BigWigs always shows its own pull bar")
 end)
 
 test("pull display: scale and opacity sliders; unlocked shows a sample to move", function()
@@ -3401,6 +3395,53 @@ test("pet taunt: Growl on autocast in a group where you are not the tank warns o
     state.now = 40
     state.fire("PLAYER_REGEN_DISABLED")
     equal(state.count("Pet taunt on"), 2, "at most once in 30 seconds")
+end)
+
+test("pet taunt: the layout-mode sample names your class's taunts, worded as the warning", function()
+    local hunterState = hunter()
+    local title, line = hunterState.ns.PetTauntSample()
+    equal(title, "Pet taunt on")
+    equal(line, "Growl is on autocast in a group. Turn it off.")
+    equal(line, select(2, hunterState.ns.PetTauntWords({"Growl"})), "the same words as the live warning")
+    local warlock = fixture({class = "WARLOCK", group = {role = "DAMAGER"}})
+    title, line = warlock.ns.PetTauntSample()
+    equal(title, "Pet taunt on")
+    -- Suffering (17735) has no name in the mock client: the plain fallback.
+    equal(line, "Torment and Suffering are on autocast in a group. Turn it off.")
+    warlock.env.C_Spell.GetSpellName = function(id)
+        if id == 3716 then return "Qual" end
+        return warlock.secret()
+    end
+    equal(select(2, warlock.ns.PetTauntSample()), "Qual and Suffering are on autocast in a group. Turn it off.",
+        "the client's name; a secret name falls back to the plain one")
+    local text = assert(io.open("PetTaunt.lua")):read("*a")
+    equal(text:find("Growl is on", 1, true), nil, "no fixed Growl sample")
+end)
+
+test("settings tooltips are one plain sentence", function()
+    local state = fixture()
+    -- DCT's own settings only (the Toolkit's rows are the Toolkit's).
+    local own = {}
+    for _, file in ipairs({"GroupSettings.lua", "Swing.lua"}) do
+        for variable in assert(io.open(file)):read("*a"):gmatch('"(DYRE_[%u_]+)"') do
+            own[variable] = true
+        end
+    end
+    local count = 0
+    for variable, setting in pairs(state.settings) do
+        local tooltip = setting.tooltip
+        if own[variable] and type(tooltip) == "string" then
+            count = count + 1
+            equal(tooltip:find("\n", 1, true), nil, variable .. ": one line")
+            local _, stops = tooltip:gsub("[%.!?] ", "")
+            equal(stops, 0, variable .. ": one sentence: " .. tooltip)
+            assert(tooltip:match("[%.!?]$"), variable .. ": ends a sentence")
+            assert(#tooltip <= 120, variable .. ": short: " .. tooltip)
+        end
+    end
+    local total = 0
+    for _ in pairs(own) do total = total + 1 end
+    equal(count, total, "every DCT setting is checked")
 end)
 
 test("pet taunt: no warning solo, as the tank, with autocast off, unknown, off, or owned by another", function()

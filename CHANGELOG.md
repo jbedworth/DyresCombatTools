@@ -5,6 +5,12 @@ first. The release builder copies the section for the TOC version into the
 GitHub release notes and the CurseForge changelog, and fails if that section
 is missing.
 
+## 1.0.1
+
+### Fixes
+- The pet taunt warning's sample, shown while frames are unlocked, now names your class's pet taunts in your game's language (a Warlock sees Torment and Suffering, not Growl), worded as the real warning.
+- Every settings tooltip is now one short sentence.
+
 ## 1.0.0
 
 ### Features

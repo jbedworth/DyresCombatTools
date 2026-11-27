@@ -259,111 +259,73 @@ function DTT.InitializeGroupSettings()
     -- their saved keys.
     Section("Threat Indicators: Nameplates")
     Checkbox("DYRE_PLATE_THREAT", "Enable", "plateThreat", true,
-        "The view's icon and your threat percent beside enemy nameplates. Off: no nameplate labels.",
+        "Shows the threat icon and your threat percent beside enemy nameplates.",
         DTT.RefreshThreat)
     Dropdown("DYRE_THREAT_MODE", "Threat view", "threatMode", DTT.THREAT_MODES, MODE_LABELS,
-        "Auto: the shield (tank view) by the tank bar's rule: group role Tank or raid main tank, a Druid "
-        .. "in Bear Form, a Paladin with Righteous Fury, or a Warrior in Defensive Stance; else the "
-        .. "crossed swords (DPS and healer view). Tank and DPS/Healer always use that view.\n\n"
-        .. "Tank view: green while the mob is on you, yellow while another unit has more threat or is "
-        .. "near the pull point, blue while another tank has it, red when it is not on you. DPS/Healer view: "
-        .. "green below the tank, yellow at 80% of the pull point (your target only), orange when you have "
-        .. "more threat than the tank, red when it is on you.\n\nThe view also sets the Target Frame's label "
-        .. "and the threat sounds.", DTT.RefreshThreat)
+        "Auto uses the tank view (shield) while you tank and the DPS/Healer view (crossed swords) at other times.",
+        DTT.RefreshThreat)
     Dropdown("DYRE_PLATE_PLACE", "Place on nameplates", "platePlace", DTT.PLATE_PLACES, PLACE_LABELS,
         "Where the threat label sits beside a nameplate's health bar.", DTT.RefreshThreat)
     OffsetSlider("DYRE_PLATE_X", "Nameplate label: left/right", "plateX",
-        "Moves the nameplate threat label right (more) or left (less) from its place, in pixels. Also the "
-        .. "gap: with the label right of the bar, more is a wider gap.")
+        "Moves the nameplate threat label left or right, in pixels.")
     OffsetSlider("DYRE_PLATE_Y", "Nameplate label: up/down", "plateY",
-        "Moves the nameplate threat label up (more) or down (less) from its place, in pixels.")
+        "Moves the nameplate threat label up or down, in pixels.")
     ScaleSlider("DYRE_PLATE_SCALE", "Nameplate label size", "plateScale",
-        "The size of the nameplate threat label's icon and text: 100% is the default, 200% twice as big, "
-        .. "50% half.")
+        "Sets the size of the nameplate threat label.")
     Section("Threat Indicators: Target Frame")
     Checkbox("DYRE_TARGET_THREAT", "Enable", "targetThreat", true,
-        "The same label above your target frame's health bar. Off: no Target Frame label.", DTT.RefreshThreat)
+        "Shows the threat label above your target frame's health bar.", DTT.RefreshThreat)
     OffsetSlider("DYRE_TARGET_X", "Target label: left/right", "targetX",
-        "Moves the target frame's threat label right (more) or left (less) from its place, in pixels.")
+        "Moves the target frame's threat label left or right, in pixels.")
     OffsetSlider("DYRE_TARGET_Y", "Target label: up/down", "targetY",
-        "Moves the target frame's threat label up (more) or down (less) from its place, in pixels. Also "
-        .. "the gap above the bar.")
+        "Moves the target frame's threat label up or down, in pixels.")
     ScaleSlider("DYRE_TARGET_SCALE", "Target label size", "targetScale",
-        "The size of the target frame's threat label icon and text: 100% is the default, 200% twice as "
-        .. "big, 50% half.")
+        "Sets the size of the target frame's threat label.")
     Section("Threat Indicators: Sounds")
     Checkbox("DYRE_THREAT_SOUNDS", "Enable", "threatSounds", true,
-        "The red and orange threat sounds. Off: no threat sounds; the labels still change color.", function() end)
+        "Plays a sound when a threat label turns red or orange.", function() end)
     SoundDropdown("DYRE_RED_SOUND", "Alert sound (red)", "redSound", DTT.DEFAULT_RED_SOUND, "Aggro",
-        "A sound when a mob's threat label turns red: in the tank view, a mob left you; in the DPS/Healer "
-        .. "view, a mob came to you. At most once every 2 seconds. Default: Dyre's Alerts: Bell buzz, from "
-        .. "Dyre's Sounds 1.5.0 or later; without it, the game's Raid warning. Game Warnings are the game's own "
-        .. "sounds; with Dyre's Sounds installed, all of its sounds follow (Text to Speech says \"Aggro lost\" "
-        .. "or \"Aggro\"). A choice plays once to hear it (not in combat). None: no sound.")
+        "The sound when a threat label turns red.")
     SoundDropdown("DYRE_LOSING_SOUND", "Warning sound (orange)", "losingSound", DTT.DEFAULT_LOSING_SOUND,
         "Losing",
-        "A sound when a label turns orange. Tank view: a mob on a nameplate goes from you holding it "
-        .. "securely to another unit having more threat (the label shows LOSING). DPS/Healer view: you have "
-        .. "more threat than the tank (the early yellow plays nothing). At most once every 2 seconds. Default: "
-        .. "Dyre's Alerts: Cartoon shake, from Dyre's Sounds 1.5.0 or later; without it, the game's Quest "
-        .. "failed. Pick another "
-        .. "sound than the red one, so you can tell them apart. With Dyre's Sounds installed, all of its "
-        .. "sounds follow (Text to Speech says \"Losing\" or \"High threat\"). A choice plays once to hear it (not in combat). "
-        .. "None: no sound.")
+        "The sound when a threat label turns orange.")
     Checkbox("DYRE_SOLO_SOUNDS", "Threat sounds when solo", "soloSounds", false,
-        "On: the red and orange sounds also play when you are not in a group. Off (the default): they play "
-        .. "only in a party or raid; the threat labels still change color when solo.", function() end)
+        "Plays the threat sounds also when you are not in a group.", function() end)
     Section("Group Warnings")
     Checkbox("DYRE_GROUP_WARNINGS", "Enable", "groupWarnings", true,
-        "The pull bars, Dyre's countdown on screen, and the pet taunt warning. Off: none of them, whatever "
-        .. "their own switches say. Sending a pull (/dct pull, the PULL button) still works.", function()
+        "Turns the pull bars, Dyre's countdown, and the pet taunt warning on or off together.", function()
             DTT.RefreshThreat()
             DTT.ApplyPullDisplay()
             DTT.CheckPetTaunt()
         end)
     Checkbox("DYRE_PULL_BARS", "Pull bars under nameplates", "pullBars", true,
-        "Tank view, in a party (not a raid): under each enemy nameplate, a thin bar per party member in its "
-        .. "class color, full when that member pulls the mob. No bar for a member not on the mob's threat "
-        .. "list.", DTT.RefreshThreat)
+        "Shows a thin threat bar for each party member under enemy nameplates while you tank in a party.",
+        DTT.RefreshThreat)
     -- Only Dyre's own display; sending has no setting (John,
     -- 2026-11-11, read the old "Auto" as the send path).
     Checkbox("DYRE_PULL_DISPLAY", "Dyre's countdown on screen", "pullDisplay", true,
-        "Sending: /dct pull and the PULL button always use the best path: Deadly Boss Mods, then BigWigs, then "
-        .. "the game's countdown, then Dyre's own pull message.\n\n"
-        .. "On screen: Dyre's big countdown for a pull anyone in your group starts, in place of the game's own "
-        .. "countdown, only where no boss mod shows one.\n\n"
-        .. "Deadly Boss Mods: turn on its \"Do not show Pull/Break Timer bar\" and \"Do not show announce text for "
-        .. "Pull/Break Timer\" (/dbm > Global Disables & Filters > Disable DBM Features) and Dyre's countdown "
-        .. "shows instead.\n"
-        .. "BigWigs always shows its own pull bar, so with BigWigs loaded Dyre's countdown stays hidden.\n\n"
-        .. "/dyre unlock shows it to move.", DTT.ApplyPullDisplay)
+        "Shows Dyre's big pull countdown on screen when no boss mod shows one.", DTT.ApplyPullDisplay)
     SoundDropdown("DYRE_PULL_TICK", "Countdown tick sound", "pullTick", DTT.DEFAULT_PULL_TICK, "5",
-        "Dyre's countdown: the sound on each of the last 5 seconds. Text to Speech says the number. None: no "
-        .. "tick.")
+        "The sound on each of the last 5 seconds of Dyre's countdown.")
     SoundDropdown("DYRE_PULL_GO", "Countdown go sound", "pullGo", DTT.DEFAULT_PULL_GO, "Pull",
-        "Dyre's countdown: the sound at 0, with PULL!. Text to Speech says \"Pull\". None: no sound.")
+        "The sound at the end of Dyre's countdown.")
     local widget = DTT.PullDisplayWidget and DTT.PullDisplayWidget()
     if widget then
         ns.toolkit.AddWidgetSettings(category, layout, widget, {
             labels = {scale = "Countdown size (%)", opacity = "Countdown opacity (%)"}})
     end
     Checkbox("DYRE_PET_TAUNT", "Warn: pet taunt on in a group", "petTaunt", true,
-        "Hunters and Warlocks: a message on screen and in chat when your pet's taunt (Growl, Torment, "
-        .. "Suffering) is on autocast in a group where you are not the tank.", DTT.CheckPetTaunt)
+        "Warns you when your pet's taunt is on autocast in a group where you are not the tank.",
+        DTT.CheckPetTaunt)
 
     Section("Tank Tools")
     Checkbox("DYRE_TANK_TOOLS", "Enable", "tankTools", true,
-        "The tank button bar. Off: no bar, also while frames are unlocked. The key bindings and /dct still "
-        .. "work, because you press them on purpose.", DTT.RefreshBar)
+        "Shows the tank button bar.", DTT.RefreshBar)
     Dropdown("DYRE_TANK_BAR_MODE", "Tank button bar", "barMode", DTT.BAR_MODES, BAR_LABELS,
-        "Skull, Next marker, pings, and PULL in a bar.\n\nAuto (tank only): shown while your group role is "
-        .. "Tank (or you are a raid's main tank), or as a Warrior in Defensive Stance, a Druid in Bear or Dire "
-        .. "Bear Form, or a Paladin with Righteous Fury. Always and Never force it. It shows also while frames "
-        .. "are unlocked, to move it. In combat, a change waits for the end of combat.\n\nThe key bindings "
-        .. "(Key Bindings > AddOns > Dyre's Threat and Combat Tools) work also with the bar hidden.", DTT.RefreshBar)
+        "Auto shows the tank button bar only while you tank, and Always and Never force it.", DTT.RefreshBar)
     Slider("DYRE_PULL", "Pull countdown (seconds)", "pull", DTT.PULL_MIN, DTT.PULL_MAX, DTT.DEFAULT_PULL, "%d s",
         DTT.SanitizePull,
-        "The length of the PULL button's countdown. /dct pull 5 sets it for one pull.")
+        "The length of the PULL button's countdown.")
 
     -- The swing timer and range box (Swing.lua).
     if ns.AddSwingSettings then

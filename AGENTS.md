@@ -460,9 +460,15 @@ PLAYER_LOGIN calls `ns.InitializeTank` after the toolkit's own settings.
   values on the target and on the first hostile plate.
 - Pet Taunt warning (PetTaunt.lua, DBR 1.5.0's code): in a group where you
   are not the designated tank, Growl, Torment, or Suffering on autocast; a
-  message box widget ("DyresToolkitWarning") and a chat line, when it
+  message box widget ("DyresCombatToolsWarning") and a chat line, when it
   becomes true or its text changes and once more as combat starts, at most
-  once in 30 seconds; checked out of combat only.
+  once in 30 seconds; checked out of combat only. Unlocked, the box shows
+  a sample built by the same words function as the live warning
+  (`DTT.PetTauntWords`), with the class's taunts (`DTT.PET_TAUNT_SAMPLES`:
+  Hunter Growl; Warlock Torment and Suffering) named by the client
+  (`C_Spell.GetSpellName`, else GetSpellInfo; a secret or missing name
+  gives the plain English one). 1.0.1 (John, 2026-11-27, "Yes, fix it"): a
+  Warlock's sample said Growl.
 - Marking: AddOn code never calls `SetRaidTarget` (`HasRestrictions`; in
   combat the game blocks it with a popup). Markers come only from the
   game's `/tm` in secure action buttons' macro text, with `!` and `exists`.
@@ -816,6 +822,15 @@ right after the saved settings load, so it works without the threat API.
   frame or initializer, never write a field on a Blizzard frame, and never
   leave a function of ours on one. `hooksecurefunc` only (GroupSettings.lua
   `NestSoundMenu`).
+- Settings tooltips are one plain sentence (John, 2026-11-27: "every one
+  of the tooltips seems to start with a good one sentence description, but
+  then has nonsensical follow-on text"); tests/tank.lua checks every
+  `DYRE_` setting. Details go in README and AGENTS, not the tooltip.
+- A settings button row that can be greyed calls
+  `DyresToolkit.GreyButtonLabel` (feature-tested, Toolkit 2.17.0), else its
+  gold label stays on Forever. DCT has no button row of its own today; the
+  widgets' Reset rows are the Toolkit's (`AddWidgetSettings`, which greys
+  its own).
 - Never compare, print, or index a value that may be secret. Gate on
   required APIs, never on client version (the Toolkit version gate above is
   about the Toolkit's features, not the client).
