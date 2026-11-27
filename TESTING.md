@@ -158,6 +158,12 @@ Ported from Dyre's Tank Tools' checklist; none is checked in client yet.
 - [ ] Always: the bar shows for every class. Never: it stays hidden, also in
       Defensive Stance; `/dyre unlock` shows it to move, `/dyre lock` hides it.
 - [ ] With the bar hidden, the key bindings still mark, ping, and pull.
+- [ ] 1.1.0, with Dyre's Toolkit 2.18.0: Tank Tools > Layout > Vertical
+      makes the bar a column at once, out of combat; Horizontal makes it a
+      row again. The bar stays where it was. The choice stays after
+      `/reload`. In combat a change waits for the end of combat, with no
+      Lua error. Turning Tank Tools' Enable off greys the Layout row.
+- [ ] Same, with a Toolkit before 2.18.0: no Layout row; the bar is a row.
 - [ ] Key Bindings > AddOns > Dyre's Threat and Combat Tools lists the eight tank bindings (Toolkit 2.16.0).
 - [ ] `/dct debug` prints the owners (all
       DyresCombatTools), pings, and the pull runner.

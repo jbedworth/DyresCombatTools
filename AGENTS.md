@@ -159,6 +159,17 @@ PLAYER_LOGIN calls `ns.InitializeTank` after the toolkit's own settings.
   no switch. The core settings above (unlocked, grid, snap, minimap) have
   none. The pull slider has the number at its right and the
   gold default mark (`ns.AddDefaultTick`), as every toolkit slider must.
+- Tank bar layout (1.1.0; John, 2026-11-27, Toolkit 2.18.0's button bars,
+  after a CurseForge player asked MTF for vertical bars): with
+  `DyresToolkit.BAR_LAYOUT_VERSION` 1 (`DTT.HasBarLayout`, a feature test),
+  TankButtons.lua `LayOut` hands the shown buttons to
+  `bar:LayoutButtons(shown, {size = 30, gap = 4, padding = 4})`: a row or a
+  column by the widget's saved `orientation` (in `DyresCombatToolsCharDB.bar`,
+  so in the profile part). GroupSettings.lua adds the Toolkit's "Layout" row
+  (`AddBarLayoutSetting`, variable `DYRE_DYRESCOMBATTOOLS_TANKBAR_ORIENTATION`)
+  after "Tank button bar", greyed while Tank Tools' Enable is off (`modify`,
+  `watch = {"DYRE_TANK_TOOLS"}`). An older Toolkit: no row, and the old row
+  layout (each button LEFT on the bar). The minimum Toolkit stays 2.16.0.
 - Tank bar (`barMode`: "auto" default, "always", "never"; John, 2026-11-11:
   "the Tank Bar should show [if] a) Group Role is Tank, b) Warrior Defensive
   Stance, Druid Bear Form, Paladin with Righteous Fury enabled"). Auto is

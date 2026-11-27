@@ -73,6 +73,8 @@ and keep the rest.
   mob under your mouse, else your target), and Next marker
   (skull, cross, square, triangle, diamond, circle, star). Moon stays free for
   Banish and Polymorph.
+- **Row or column**: Layout in the Tank Tools settings makes the tank button
+  bar horizontal or vertical (Dyre's Toolkit 2.18.0 or later).
 - **Pings** (Forever): Attack, Warning, Assist, On my way, and Skull and ping
   in one press (on the mob under your mouse, else your target). Classic Era has no pings.
 - **Pull countdown**: the PULL button or `/dct pull 10` (`/dct pull 0`

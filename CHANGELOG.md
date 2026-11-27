@@ -5,6 +5,11 @@ first. The release builder copies the section for the TOC version into the
 GitHub release notes and the CurseForge changelog, and fails if that section
 is missing.
 
+## 1.1.0
+
+### Features
+- The tank button bar can be a row or a column: Layout in the Tank Tools settings (Horizontal or Vertical). It needs Dyre's Toolkit 2.18.0 or later; with an older Toolkit the bar stays a row.
+
 ## 1.0.1
 
 ### Fixes

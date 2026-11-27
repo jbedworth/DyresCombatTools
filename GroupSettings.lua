@@ -323,6 +323,15 @@ function DTT.InitializeGroupSettings()
         "Shows the tank button bar.", DTT.RefreshBar)
     Dropdown("DYRE_TANK_BAR_MODE", "Tank button bar", "barMode", DTT.BAR_MODES, BAR_LABELS,
         "Auto shows the tank button bar only while you tank, and Always and Never force it.", DTT.RefreshBar)
+    -- Row or column (Toolkit 2.18.0's button bars; John, 2026-11-27), greyed
+    -- while Tank Tools is off. An older Toolkit: no row, the bar stays a row.
+    if DTT.HasBarLayout() and type(ns.toolkit.AddBarLayoutSetting) == "function" then
+        ns.toolkit.AddBarLayoutSetting(category, layout, DTT.TankBarWidget(), {
+            tooltip = "Lays the tank buttons out in a row or a column.",
+            modify = function() return DTT.db.tankTools ~= false end,
+            watch = {"DYRE_TANK_TOOLS"},
+        })
+    end
     Slider("DYRE_PULL", "Pull countdown (seconds)", "pull", DTT.PULL_MIN, DTT.PULL_MAX, DTT.DEFAULT_PULL, "%d s",
         DTT.SanitizePull,
         "The length of the PULL button's countdown.")

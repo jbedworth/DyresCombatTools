@@ -301,7 +301,7 @@ local function fixture(options)
                     Author = "Dyre"})[field]
             end
             if name ~= ADDON then return nil end
-            return ({Title = "Dyre's Threat and Combat Tools", Version = "1.0.1", Author = "Dyre"})[field]
+            return ({Title = "Dyre's Threat and Combat Tools", Version = "1.1.0", Author = "Dyre"})[field]
         end,
         IsAddOnLoaded = function(name) return (options.loaded or {})[name] == true, false end,
     }
@@ -397,6 +397,14 @@ local function fixture(options)
             end
             function initializer:Resetter(frame) self.reset = frame end
             function initializer:GetSetting() return self.setting end
+            function initializer:AddModifyPredicate(predicate)
+                self.predicates = self.predicates or {}
+                self.predicates[#self.predicates + 1] = predicate
+            end
+            function initializer:AddEvaluateStateCVar(variable)
+                self.watched = self.watched or {}
+                self.watched[#self.watched + 1] = variable
+            end
             setting.initializer = initializer
             if true then return initializer end
         end,
@@ -532,7 +540,7 @@ test("a client without a threat API keeps the features off, quiet at login, and 
     local state = fixture({remove = {"UnitDetailedThreatSituation"}})
     equal(state.ns.available, false)
     equal(#state.messages, 1, "nothing said at login but the welcome line")
-    contains(state.messages[1], "Dyre's Threat and Combat Tools 1.0.1")
+    contains(state.messages[1], "Dyre's Threat and Combat Tools 1.1.0")
     state.env.SlashCmdList.DYRESCOMBATTOOLS("pull")
     contains(state.find("off on this client"), "lacks UnitDetailedThreatSituation")
     state.env.SlashCmdList.DYRESCOMBATTOOLS("debug")
@@ -2249,9 +2257,12 @@ test("settings page: the threat sections, then Group Warnings, then Tank Tools",
         "DYRE_SOLO_SOUNDS",
         "## Group Warnings", "DYRE_GROUP_WARNINGS", "DYRE_PULL_BARS", "DYRE_PULL_DISPLAY", "DYRE_PULL_TICK", "DYRE_PULL_GO",
         "DYRE_DYRESCOMBATTOOLS_PULLTIMER_SCALE", "DYRE_DYRESCOMBATTOOLS_PULLTIMER_OPACITY", "DYRE_PET_TAUNT",
-        "## Tank Tools", "DYRE_TANK_TOOLS", "DYRE_TANK_BAR_MODE", "DYRE_PULL",
+        "## Tank Tools", "DYRE_TANK_TOOLS", "DYRE_TANK_BAR_MODE",
+        "LAYOUT", "DYRE_PULL",
         "## Swing Timer", "DYRE_SWING_SHOW", "DYRE_SWING_OPACITY_COMBAT", "DYRE_SWING_OPACITY_IDLE",
-        "DYRE_SWING_IN_USE", "DYRE_SWING_RANGE", "DYRE_SWING_HOLD", "DYRE_SWING_CLIP", "DYRE_SWING_THEME"}, ","))
+        "DYRE_SWING_IN_USE", "DYRE_SWING_RANGE", "DYRE_SWING_HOLD", "DYRE_SWING_CLIP", "DYRE_SWING_THEME"}, ",")
+        -- The Layout row only with Toolkit 2.18.0's button bars.
+        :gsub("LAYOUT,", state.toolkit.BAR_LAYOUT_VERSION and "DYRE_DYRESCOMBATTOOLS_TANKBAR_ORIENTATION," or ""), nil)
 end)
 
 -- John, 2026-11-15: "Each of the non-core ... features of DT need an

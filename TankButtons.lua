@@ -254,13 +254,34 @@ local function LayOut()
             button:Hide()
         end
     end
+    for _, button in ipairs(shown) do
+        button:Show()
+    end
+    -- Toolkit 2.18.0's button bars (John, 2026-11-27): a row or a column, by
+    -- the widget's saved orientation (the "Layout" row in Tank Tools).
+    if DTT.HasBarLayout() then
+        bar:LayoutButtons(shown, {size = BUTTON_SIZE, gap = BUTTON_GAP, padding = PADDING})
+        return
+    end
+    -- An older Toolkit: a row, as before.
     for index, button in ipairs(shown) do
         button:ClearAllPoints()
         button:SetPoint("LEFT", bar, "LEFT", PADDING + (index - 1) * (BUTTON_SIZE + BUTTON_GAP), 0)
-        button:Show()
     end
     local count = math.max(1, #shown)
     bar:SetContentSize(PADDING * 2 + count * BUTTON_SIZE + (count - 1) * BUTTON_GAP, BUTTON_SIZE + PADDING * 2)
+end
+
+-- Whether the Toolkit lays out button bars (BAR_LAYOUT_VERSION 1, Toolkit
+-- 2.18.0) and the tank bar has the widget methods.
+function DTT.HasBarLayout()
+    return (tonumber(ns.toolkit.BAR_LAYOUT_VERSION) or 0) >= 1 and bar ~= nil
+        and type(bar.LayoutButtons) == "function" and type(bar.GetOrientation) == "function"
+end
+
+-- The tank bar's widget, for the "Layout" row (GroupSettings.lua).
+function DTT.TankBarWidget()
+    return bar
 end
 
 -- Whether the bar shows now, and why (for /dct debug).

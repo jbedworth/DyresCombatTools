@@ -38,7 +38,7 @@ test("with a Toolkit that has no tank features, DCT runs: commands, owners, a pa
     end
     equal(state.toolkit.KindOwner("threat"), "DyresCombatTools")
     equal(state.category.name, "Threat and Combat Tools", "a page under Dyre's AddOns")
-    contains(state.find("Dyre's Threat and Combat Tools 1.0.1 by Dyre"), "/dct opens the settings")
+    contains(state.find("Dyre's Threat and Combat Tools 1.1.0 by Dyre"), "/dct opens the settings")
     equal(state.env.BINDING_HEADER_DYRESCOMBATTOOLS, nil, "no binding header of DCT's")
 end)
 
@@ -367,4 +367,64 @@ test("another AddOn with /dct: DCT says so once at login and names the settings 
     contains(line, "Another AddOn (OTHERADDON)")
     contains(line, "Threat and Combat Tools")
     equal(line:find("tanktools", 1, true), nil, "no backup command to offer")
+end)
+
+-- Button bars (Toolkit 2.18.0, BAR_LAYOUT_VERSION 1; John, 2026-11-27).
+local ORIENTATION = "DYRE_DYRESCOMBATTOOLS_TANKBAR_ORIENTATION"
+
+local function FirstShown(state)
+    local shown = {}
+    for _, button in ipairs(state.ns.Buttons()) do
+        if button.available then
+            shown[#shown + 1] = button
+        end
+    end
+    return shown
+end
+
+test("tank bar: a row or a column through the Toolkit's button bars, saved, with a Layout row", function()
+    local state = fixture({db = {barMode = "always"}})
+    if not state.toolkit.BAR_LAYOUT_VERSION then
+        -- The vendored Toolkit is older: the fallback test below covers it.
+        equal(state.settings[ORIENTATION], nil, "no Layout row without the feature")
+        return
+    end
+    equal(state.ns.HasBarLayout(), true)
+    local bar = state.ns.TankBarWidget()
+    equal(bar:GetOrientation(), "horizontal", "a row by default")
+    local shown = FirstShown(state)
+    assert(#shown >= 3, "several buttons on the bar")
+    local second = shown[2].points[1]
+    equal(second[1], "TOPLEFT")
+    equal(second[4], 4 + 30 + 4, "the second button right of the first")
+    equal(second[5], -4)
+    local setting = state.settings[ORIENTATION]
+    assert(setting, "a Layout row in Tank Tools")
+    equal(setting.name, "Layout")
+    equal(setting.tooltip, "Lays the tank buttons out in a row or a column.")
+    setting:SetValue("vertical")
+    equal(state.env.DyresCombatToolsCharDB.bar.orientation, "vertical", "saved in DCT's own settings")
+    second = shown[2].points[1]
+    equal(second[4], 4, "a column: the same left edge")
+    equal(second[5], -(4 + 30 + 4), "a column: the second button below the first")
+    state.ns.RefreshBar()
+    equal(shown[2].points[1][5], -(4 + 30 + 4), "a refresh keeps the column")
+    local row = setting.initializer
+    equal(row.watched[1], "DYRE_TANK_TOOLS", "greyed with Tank Tools' Enable")
+    equal(row.predicates[1](), true)
+    state.env.DyresCombatToolsCharDB.tankTools = false
+    equal(row.predicates[1](), false, "greyed while Tank Tools is off")
+end)
+
+test("tank bar: an older Toolkit keeps the row layout and shows no Layout row", function()
+    local state = fixture({noLogin = true, db = {barMode = "always"}})
+    state.toolkit.BAR_LAYOUT_VERSION = nil
+    state.fire("ADDON_LOADED", "DyresToolkit")
+    state.fire("ADDON_LOADED", "DyresCombatTools")
+    state.fire("PLAYER_LOGIN")
+    equal(state.ns.HasBarLayout(), false)
+    equal(state.settings[ORIENTATION], nil, "no Layout row")
+    local second = FirstShown(state)[2].points[1]
+    equal(second[1], "LEFT", "today's row")
+    equal(second[4], 4 + 30 + 4)
 end)
