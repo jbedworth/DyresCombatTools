@@ -1,0 +1,20 @@
+## Interface: 16001, 11509
+## Title: Dyre's Threat and Combat Tools
+## Notes: Threat warnings for every player, a swing timer with a range box, and tank tools: markers, pings, and pull countdowns
+## Author: Dyre
+## Version: 1.0.0
+## IconTexture: Interface\Icons\Ability_Warrior_DefensiveStance
+## Category: Dyre's AddOns
+## OptionalDeps: DyresToolkit, DyresSounds
+## Group: DyresToolkit
+## SavedVariablesPerCharacter: DyresCombatToolsCharDB
+
+Core.lua
+Tank.lua
+Threat.lua
+PetTaunt.lua
+TankButtons.lua
+Pull.lua
+TankProbe.lua
+GroupSettings.lua
+Swing.lua

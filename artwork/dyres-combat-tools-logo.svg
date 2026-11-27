@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title description">
+  <title id="title">Dyre's Threat and Combat Tools</title>
+  <desc id="description">An original emblem: two crossed steel swords with gold hilts over a gold-edged crimson heater shield, on a rich dark-brown field framed by a fine gold border.</desc>
+  <defs>
+    <radialGradient id="background" cx="50%" cy="42%" r="70%">
+      <stop offset="0" stop-color="#49301c"/>
+      <stop offset="0.6" stop-color="#2b190f"/>
+      <stop offset="1" stop-color="#170e09"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4d38b"/>
+      <stop offset="0.32" stop-color="#d5a956"/>
+      <stop offset="0.64" stop-color="#96703a"/>
+      <stop offset="1" stop-color="#e9bf6a"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b3261c"/>
+      <stop offset="1" stop-color="#4a0b08"/>
+    </linearGradient>
+    <linearGradient id="light" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8d98a6"/>
+      <stop offset="0.45" stop-color="#f4f7fb"/>
+      <stop offset="0.55" stop-color="#c9d1db"/>
+      <stop offset="1" stop-color="#5d6672"/>
+    </linearGradient>
+    <linearGradient id="leather" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3a1f10"/>
+      <stop offset="0.5" stop-color="#6b3a1c"/>
+      <stop offset="1" stop-color="#2a160b"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ffb070" stop-opacity="0.28"/>
+      <stop offset="0.7" stop-color="#c9602f" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#3a2410" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-35%" y="-35%" width="170%" height="170%">
+      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#080502" flood-opacity="0.7"/>
+    </filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#080502" flood-opacity="0.65"/>
+    </filter>
+    <!-- One sword, point up, centered on x 512; drawn twice, turned. -->
+    <g id="sword">
+      <path d="M512 150 L536 196 L536 600 L488 600 L488 196 Z" fill="url(#steel)" stroke="#3b424c" stroke-width="4" stroke-linejoin="round"/>
+      <path d="M512 206 V588" stroke="#7d8794" stroke-width="5" stroke-linecap="round"/>
+      <path d="M426 598 Q512 586 598 598 L598 624 Q512 612 426 624 Z" fill="url(#gold)" stroke="#6e4a1c" stroke-width="4" stroke-linejoin="round"/>
+      <circle cx="426" cy="611" r="14" fill="url(#gold)" stroke="#6e4a1c" stroke-width="4"/>
+      <circle cx="598" cy="611" r="14" fill="url(#gold)" stroke="#6e4a1c" stroke-width="4"/>
+      <rect x="497" y="622" width="30" height="88" rx="6" fill="url(#leather)" stroke="#1c0e06" stroke-width="3"/>
+      <path d="M497 640 L527 652 M497 662 L527 674 M497 684 L527 696" stroke="#a8743c" stroke-opacity="0.7" stroke-width="3"/>
+      <circle cx="512" cy="730" r="24" fill="url(#gold)" stroke="#6e4a1c" stroke-width="4"/>
+      <circle cx="505" cy="723" r="7" fill="#fff2c4" fill-opacity="0.7"/>
+    </g>
+  </defs>
+  <path d="M0 0H1024V1024H0Z" fill="url(#background)"/>
+  <rect x="46" y="46" width="932" height="932" rx="94" fill="none" stroke="url(#gold)" stroke-width="5"/>
+  <rect x="62" y="62" width="900" height="900" rx="80" fill="none" stroke="#b48b45" stroke-opacity="0.28" stroke-width="2"/>
+  <path d="M512 91 L525 108 L512 125 L499 108 Z M512 899 L525 916 L512 933 L499 916 Z" fill="url(#gold)"/>
+  <!-- A warm battle aura behind the emblem. -->
+  <circle cx="512" cy="480" r="360" fill="url(#aura)"/>
+  <g filter="url(#shadow)">
+    <!-- The shield: a gold rim, a crimson face, and a lighter left half. -->
+    <path d="M512 214 Q610 250 706 244 L706 470 Q706 640 512 748 Q318 640 318 470 L318 244 Q414 250 512 214 Z" fill="url(#gold)" stroke="#6e4a1c" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M512 244 Q600 274 680 270 L680 470 Q680 620 512 716 Q344 620 344 470 L344 270 Q424 274 512 244 Z" fill="url(#face)" stroke="#f0ca78" stroke-opacity="0.7" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M512 244 Q424 274 344 270 L344 470 Q344 620 512 716 Z" fill="url(#light)"/>
+    <!-- The crossed swords, over the shield. -->
+    <g filter="url(#soft)">
+      <use href="#sword" transform="rotate(-40 512 450) translate(512 450) scale(1.14) translate(-512 -450)"/>
+      <use href="#sword" transform="rotate(40 512 450) translate(512 450) scale(1.14) translate(-512 -450)"/>
+    </g>
+    <!-- Fine outer rings, as on the other Forever logos. -->
+    <circle cx="512" cy="480" r="338" fill="none" stroke="#f0ca78" stroke-opacity="0.45" stroke-width="2"/>
+    <circle cx="512" cy="480" r="350" fill="none" stroke="#b48b45" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="3 12"/>
+  </g>
+  <path d="M359 850H457 M567 850H665" fill="none" stroke="#b98e47" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>
+  <path d="M512 837 L524 850 L512 863 L500 850 Z" fill="url(#gold)"/>
+</svg>
