@@ -72,9 +72,23 @@ DTT.DEFAULT_MARKER_ORDER = {8, 7, 6, 4, 3, 2, 1}
 DTT.PULL_MIN, DTT.PULL_MAX, DTT.DEFAULT_PULL = 1, 60, 10
 -- Threat label offsets (John, 2026-11-11), whole pixels added to the place.
 DTT.OFFSET_MIN, DTT.OFFSET_MAX = -50, 50
--- Threat label size, whole percent of the default (John, 2026-11-13: "scale
--- up or down, up to 100% (2x) it's default size"); down to half.
+-- Threat label size, whole percent of the label's base size (John,
+-- 2026-11-13: "scale up or down, up to 100% (2x) it's default size"); down
+-- to half.
 DTT.SCALE_MIN, DTT.SCALE_MAX, DTT.DEFAULT_SCALE = 50, 200, 100
+-- The nameplate label's base size is twice the old one (John, 2026-11-27:
+-- "The size it is now (200% bigger than the original) becomes 100%, slider
+-- stays the same, just the origin moves."). The target frame label keeps its
+-- base size. Threat.lua multiplies plateScale by this.
+DTT.PLATE_BASE_SCALE = 2
+-- Saves before SCALE_SAVES 1 hold plateScale on the old base: a choice is
+-- halved once (same look), and the old default 100 stays 100 (the new,
+-- bigger default look).
+DTT.SCALE_SAVES = 1
+-- Each label setting's own default. plateX -20 (John, 2026-11-27: "-20px
+-- then, it looks good where it is"); the others 0 and 100%. A saved offset
+-- stays; only a missing or bad value gets these.
+DTT.LABEL_DEFAULTS = {plateX = -20, plateY = 0, targetX = 0, targetY = 0, plateScale = 100, targetScale = 100}
 -- Threat view (author, 2026-11-10): "auto" finds whether you tank by the
 -- tank bar's rule (Threat.lua TankReasons); "tank" and "dps" force a view. "dps" is also the healer view.
 DTT.THREAT_MODES = {"auto", "tank", "dps"}
@@ -271,16 +285,18 @@ local function IsWholeNumber(value)
     return type(value) == "number" and value == value and value == math.floor(value)
 end
 
-function DTT.SanitizeOffset(value)
+-- default: the setting's own (DTT.LABEL_DEFAULTS), else 0.
+function DTT.SanitizeOffset(value, default)
     if not IsWholeNumber(value) then
-        return 0
+        return IsWholeNumber(default) and default or 0
     end
     return math.max(DTT.OFFSET_MIN, math.min(DTT.OFFSET_MAX, value))
 end
 
-function DTT.SanitizeScale(value)
+-- default: the setting's own (DTT.LABEL_DEFAULTS), else DEFAULT_SCALE.
+function DTT.SanitizeScale(value, default)
     if not IsWholeNumber(value) then
-        return DTT.DEFAULT_SCALE
+        return IsWholeNumber(default) and default or DTT.DEFAULT_SCALE
     end
     return math.max(DTT.SCALE_MIN, math.min(DTT.SCALE_MAX, value))
 end
@@ -308,6 +324,15 @@ function DTT.SanitizeMarkerOrder(order)
         return {unpack(DTT.DEFAULT_MARKER_ORDER)}
     end
     return clean
+end
+
+-- plateScale, moved once to the new base (DTT.PLATE_BASE_SCALE).
+local function PlateScale(db)
+    local value = db.plateScale
+    if db.scaleSaves ~= DTT.SCALE_SAVES and IsWholeNumber(value) and value ~= DTT.DEFAULT_SCALE then
+        value = math.floor(value / DTT.PLATE_BASE_SCALE + 0.5)
+    end
+    return DTT.SanitizeScale(value, DTT.LABEL_DEFAULTS.plateScale)
 end
 
 local function Flag(value, default)
@@ -354,12 +379,13 @@ function DTT.SanitizeDB(db, classFile)
         platePlace = (db.placeSaves ~= DTT.PLACE_SAVES and db.platePlace == "right") and "left"
             or OneOf(db.platePlace, DTT.PLATE_PLACES),
         placeSaves = DTT.PLACE_SAVES,
-        plateX = DTT.SanitizeOffset(db.plateX),
-        plateY = DTT.SanitizeOffset(db.plateY),
-        targetX = DTT.SanitizeOffset(db.targetX),
-        targetY = DTT.SanitizeOffset(db.targetY),
-        plateScale = DTT.SanitizeScale(db.plateScale),
-        targetScale = DTT.SanitizeScale(db.targetScale),
+        plateX = DTT.SanitizeOffset(db.plateX, DTT.LABEL_DEFAULTS.plateX),
+        plateY = DTT.SanitizeOffset(db.plateY, DTT.LABEL_DEFAULTS.plateY),
+        targetX = DTT.SanitizeOffset(db.targetX, DTT.LABEL_DEFAULTS.targetX),
+        targetY = DTT.SanitizeOffset(db.targetY, DTT.LABEL_DEFAULTS.targetY),
+        plateScale = PlateScale(db),
+        scaleSaves = DTT.SCALE_SAVES,
+        targetScale = DTT.SanitizeScale(db.targetScale, DTT.LABEL_DEFAULTS.targetScale),
         -- Sound choices: nil is the default (EffectiveSound).
         redSound = SoundChoice(db, "redSound", db.sound),
         losingSound = SoundChoice(db, "losingSound"),

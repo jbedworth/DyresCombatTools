@@ -577,7 +577,8 @@ end
 -- edge (icon nearest the bar), above and below center the icon and text on it.
 -- x and y (the player's offsets, whole pixels; John, 2026-11-11: an
 -- adjustable "Gap Distance" or "vertical/horizontal adjustments") add to
--- the place, so 0 and 0 keep it. scale (whole percent, 50 to 200; John,
+-- the place, so 0 and 0 keep it. scale (whole percent of the old base, 50
+-- to 400 since the nameplate label's base doubled; John,
 -- 2026-11-13: "scale up or down, up to 100% (2x) it's default size") sizes
 -- the icon and text with SetScale; a frame's own point offsets are in its
 -- scaled units, so the gap and x and y are divided by the scale and stay
@@ -964,8 +965,9 @@ local function UpdatePlate(unit, alert)
     label = label or NewLabel()
     plates[unit] = label
     -- Below the bar, the label goes under the pull bars.
+    -- The nameplate label's base is twice the old size (DTT.PLATE_BASE_SCALE).
     Place(label, DTT.db.platePlace == "below" and holder or anchor, DTT.db.platePlace, DTT.db.plateX, DTT.db.plateY,
-        DTT.db.plateScale)
+        DTT.db.plateScale * DTT.PLATE_BASE_SCALE)
     Show(label, unit, alert)
 end
 

@@ -222,14 +222,17 @@ local function Slider(variable, name, key, minimum, maximum, default, format, sa
         {min = minimum, max = maximum, default = default})
 end
 
+-- Each label slider's default (and gold mark) is its own (DTT.LABEL_DEFAULTS).
 local function OffsetSlider(variable, name, key, tooltip)
-    Slider(variable, name, key, DTT.OFFSET_MIN, DTT.OFFSET_MAX, 0, "%d px", DTT.SanitizeOffset, tooltip,
-        DTT.RefreshThreat)
+    local default = DTT.LABEL_DEFAULTS[key] or 0
+    Slider(variable, name, key, DTT.OFFSET_MIN, DTT.OFFSET_MAX, default, "%d px",
+        function(value) return DTT.SanitizeOffset(value, default) end, tooltip, DTT.RefreshThreat)
 end
 
 local function ScaleSlider(variable, name, key, tooltip)
-    Slider(variable, name, key, DTT.SCALE_MIN, DTT.SCALE_MAX, DTT.DEFAULT_SCALE, "%d%%", DTT.SanitizeScale,
-        tooltip, DTT.RefreshThreat)
+    local default = DTT.LABEL_DEFAULTS[key] or DTT.DEFAULT_SCALE
+    Slider(variable, name, key, DTT.SCALE_MIN, DTT.SCALE_MAX, default, "%d%%",
+        function(value) return DTT.SanitizeScale(value, default) end, tooltip, DTT.RefreshThreat)
 end
 
 -- A change of owner: the feature turns on or off.

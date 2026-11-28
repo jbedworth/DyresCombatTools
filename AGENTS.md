@@ -394,8 +394,12 @@ PLAYER_LOGIN calls `ns.InitializeTank` after the toolkit's own settings.
 - Label offsets (John, 2026-11-11: "Can we have an adjustable "Gap
   Distance" slider (minimum) or vertical/horizontal adjustments for the
   Threat indicators?"): `plateX`/`plateY` (nameplate labels) and
-  `targetX`/`targetY` (the target label), whole pixels -50 to 50, default
-  0, repaired to that (`SanitizeOffset`). They add to the place's own
+  `targetX`/`targetY` (the target label), whole pixels -50 to 50, each
+  with its own default in `DTT.LABEL_DEFAULTS` (plateX -20 since John,
+  2026-11-27: "-20px then, it looks good where it is"; the others 0), repaired to it (`SanitizeOffset(value,
+  default)`). A saved value stays: SanitizeDB writes every value, so a save
+  from before cannot tell a choice from the old default, and only a missing
+  or bad value gets the new one. They add to the place's own
   offsets (BAR_GAP 4, half of it above and below), so 0 moves nothing; X
   and Y also cover the gap. Each slider shows "N px" and the gold default
   mark (GroupSettings.lua `Slider`, which the pull slider uses too). A move
@@ -403,8 +407,18 @@ PLAYER_LOGIN calls `ns.InitializeTank` after the toolkit's own settings.
   are plain frames.
 - Label size (John, 2026-11-13: "make the size of the threat indicator
   scale up or down, up to 100% (2x) it's default size"): `plateScale` and
-  `targetScale`, whole percent 50 to 200, default 100 (`SanitizeScale`;
-  "down" to half is our choice), a slider each ("N%", the gold mark) under
+  `targetScale`, whole percent 50 to 200, default 100
+  (`DTT.LABEL_DEFAULTS`, `SanitizeScale(value, default)`; "down" to half is
+  our choice). The nameplate label's base is twice the old size (John,
+  2026-11-27: "The size it is now (200% bigger than the original) becomes
+  100%, slider stays the same, just the origin moves."): Threat.lua passes
+  `plateScale * DTT.PLATE_BASE_SCALE` (2) to `Place`; the target label
+  keeps its base. A save before `scaleSaves` 1 (`DTT.SCALE_SAVES`) is moved
+  once in SanitizeDB (`PlateScale`): exactly 100, the old default, stays 100
+  (the new, bigger look); any other value is halved, rounded, and clamped to
+  50 to 200 (the same look; John's 200 becomes 100). This covers the
+  one-time Toolkit copy and old profiles too; a new profile carries the
+  marker. a slider each ("N%", the gold mark) under
   its section's offsets. Threat.lua `Place` calls `SetScale` on the label
   (icon and text; ICON_SIZE stays 14) and divides the gap and x and y by the
   scale, because a frame's point offsets are in its own scaled units, so

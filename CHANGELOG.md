@@ -5,6 +5,11 @@ first. The release builder copies the section for the TOC version into the
 GitHub release notes and the CurseForge changelog, and fails if that section
 is missing.
 
+## 1.2.0
+
+### Features
+- The threat labels on nameplates are twice as big by default and sit a little further from the health bar, so you can read them at a glance. The size slider keeps its range, and 100% is now the new, bigger size. If you picked your own size before, it looks the same as it did.
+
 ## 1.1.0
 
 ### Features

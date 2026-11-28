@@ -24,7 +24,7 @@ tested.
 
 ## Summary
 
-Threat warnings for tanks, DPS, and healers, a swing timer with a range box, and tank tools: markers, pings, and pull countdowns, for WoW: Forever.
+Threat warnings for tanks, DPS, and healers, a swing timer with a range box, and tank tools for marks, pings, and pulls. For WoW: Forever and Classic Era.
 
 ## Description
 
@@ -32,41 +32,50 @@ Paste this with the description editor in Markdown mode. Pasted into the rich
 text editor, the headings, bullets, and bold show as raw, escaped markdown.
 
 ```markdown
-**Dyre's Threat and Combat Tools** tells you when you pull aggro, or lose it. Tanks, DPS, and healers all need to know, so it is on for everyone who installs it. Every part has its own switch.
+I got tired of groups falling apart over threat. The mage pulls a mob off the tank, a mob jumps the healer, or the tank never sees the add that ran to the back. Everyone in the group needs to know who has aggro, and the tank is only one of them. So I made **Dyre's Threat and Combat Tools**. It's on for every player who installs it, and every part has its own on/off switch, so you keep only the parts you use.
 
-The threat labels, swing timer, and tank tools were part of Dyre's Toolkit. They now have their own AddOn, so players who want only the simple Dyre's AddOns do not get them. Your settings come with you.
+These tools used to be part of Dyre's Toolkit. I gave them their own AddOn so players who want only the simple Dyre's AddOns don't get them. If you used them in the Toolkit, your settings come with you the first time you log in.
 
-### Threat
-- **Threat beside enemy nameplates and above your target:** an icon for your view and your threat percent, both in green, yellow, or red.
-- **Tank view (shield):** green while the mob is on you. Yellow while another player nears the pull point, and yellow PULLING (no sound) while a mob has not turned to you yet. Blue while another tank holds it. Red, with a siren, when someone else has more threat and the mob is not on you. LOSING in orange when another player passes you on a mob you still hold.
-- **DPS and healer view (crossed swords):** green below the tank. Yellow near the pull point on your target. Orange when you have more threat than the tank. Red when the mob is on you.
-- **Auto** (the default) chooses the view: the tank view for the group's Tank or raid main tank, a Druid in Bear Form, a Paladin with Righteous Fury, or a Warrior in Defensive Stance; else the DPS and healer view.
-- **Sounds** play only in a party or raid, unless you turn on "Threat sounds when solo". Choose each one from the game's warning sounds, or from Dyre's Sounds when it is installed, or None.
-- **Pull bars** (tank view, in a party): a thin bar per party member under each enemy nameplate, full when that member pulls the mob.
-- Move and resize the labels with sliders.
+### Threat on your nameplates
+- **Threat on nameplates.** An icon and your threat percent show beside every enemy nameplate and above your target, in green, yellow, or red, so you can read a whole pack at a glance.
+- **Tank view.** The icon is a shield. It's green while a mob is on you, yellow when another player gets close, blue when another tank has the mob, and red when you've lost it. An orange LOSING label warns you when a DPS passes you on a mob you still hold.
+- **DPS and healer view.** The icon is crossed swords. It's green while you're safe and yellow as you get close on your target. It turns orange when you pass the tank, and red when the mob is on you.
+- **Auto view.** This is the default. You get the tank view when you're the group's tank, or in Bear Form, Defensive Stance, or Righteous Fury, and the DPS and healer view the rest of the time.
+- **Threat sounds.** A sound plays for red and for LOSING, so you hear it while your eyes are on the boss. The sounds play only in a group, unless you turn on "Threat sounds when solo". Pick a game warning sound, a sound from Dyre's Sounds if you have it, or None.
+- **Pull bars.** In a party, the tank view shows a thin bar per party member under each nameplate. The bar is full when that player pulls the mob off you.
+- You can move and resize the labels with sliders.
 
 ### Swing timer and range box
-- A bar for each swing (main hand, off hand, ranged) in a box that turns green in range and red out of range, with the state as text: RANGE, MELEE, DEAD ZONE, TOO CLOSE, or TOO FAR.
-- **Hunters:** the red "hold still" zone of Auto Shot, and orange clip zones for Aimed Shot and Sniper Shot, with your haste.
-- **Only bars in use:** the frame grows and shrinks with the swings you use.
-- Show it in combat, always, or never. Two themes, size and width, and opacity in and out of combat.
+- **Swing bars.** You get a bar for each swing: main hand, off hand, and ranged. Only the bars you use show, so the frame stays small.
+- **Range box.** The box around the bars turns green in range and red out of range, and the text on it says RANGE, MELEE, DEAD ZONE, TOO CLOSE, or TOO FAR.
+- **Hunter zones.** A red zone shows when to hold still for Auto Shot. Orange zones show when Aimed Shot or Sniper Shot would clip Auto Shot, and they follow your haste.
+- Show the timer in combat, always, or never. Pick one of two themes, the size and width, and the opacity in and out of combat.
 
 ### Group warnings
-- **Pet taunt on:** Hunters and Warlocks get a message when Growl, Torment, or Suffering is on autocast in a group where they are not the tank.
+- **Pet taunt on.** Hunters and Warlocks get a message when Growl, Torment, or Suffering is on autocast in a group where they're not the tank, so you can turn it off before your pet takes a mob from the tank.
 
 ### Tank tools
-- **Marking in combat** with no "blocked from an action" popup: Skull (the mob under your mouse, else your target) and Next marker. Moon stays free for crowd control.
-- **Pings:** Attack, Warning, Assist, On my way, and Skull and ping in one press.
-- **Pull countdown:** the PULL button or a command. With Deadly Boss Mods or BigWigs, they run the pull; else the game's countdown.
-- **Dyre's countdown on screen:** a big countdown with a draining bar, who started it, and a "PULL!" splash. It never overrides another AddOn's pull bar.
-- The buttons are on one bar with key bindings. The bar shows while you tank, or always, or never.
+- **Marking in combat.** Mark mobs in combat without the "blocked from an action" popup. Skull goes on the mob under your mouse, or on your target. Next marker walks through cross, square, triangle, diamond, circle, and star. Moon stays free for Banish and Polymorph.
+- **Pings.** On Forever you get Attack, Warning, Assist, and On my way, plus one button that puts the skull on a mob and pings Attack on it in one press.
+- **Pull countdown.** Click PULL or type `/dct pull 10`. If you run Deadly Boss Mods or BigWigs, your boss mod runs the pull. If not, the game's own countdown starts, and the whole group sees it.
+- **Dyre's countdown on screen.** A big number pops each second over a bar that drains, with who started the pull and a "PULL!" splash at the end. It hides when your boss mod shows its own pull bar.
+- **The tank bar.** All the buttons sit on one bar, and each one has a key binding. The bar shows while you tank, or always, or never. With Dyre's Toolkit 2.18.0 or later, it can be a row or a column.
+
+### Commands
+- `/dct` opens the settings.
+- `/dct pull 10` starts a 10-second pull, and `/dct pull 0` cancels it.
+- `/dct reset` puts the tank bar back where it started, and `/dct swing_reset` does the same for the swing timer.
 
 ### Works with
-- **Dyre's Toolkit** (required): one layout mode, snapping and a grid, the minimap button, the settings home, and one profile per character for every Dyre's AddOn.
-- **Dyre's Sounds** (optional): more sounds to choose from.
+- Dyre's Toolkit is required, and the CurseForge app installs it for you. It gives you the layout mode (`/dyre unlock`), the settings home, and one profile per character for every Dyre's AddOn.
+- Dyre's Sounds is optional. It adds more sounds to pick from.
 
 ### Compatibility
-For World of Warcraft: Forever 1.60.1 (tested on build 70888). On Classic Era, the swing bars need Forever's swing event, so only the range box works.
+For World of Warcraft: Forever 1.60.1 and Classic Era 1.15.9. Classic Era has no pings, and the swing bars need Forever, so on Classic Era you get the range box only.
 
-Source, issues, and license (MIT): https://github.com/jbedworth/DyresCombatTools
+Let me know what you think!
+
+Dyre's AddOns are free. If you enjoy them, you can support them on Ko-fi: https://ko-fi.com/dyre_janelle
+
+Source and issues (MIT): https://github.com/jbedworth/DyresCombatTools
 ```

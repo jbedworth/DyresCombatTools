@@ -54,8 +54,10 @@ Toolkit, once.
   - Where Forever hides the threat state in combat, the percent shows in white.
   - Move the labels: left/right and up/down sliders (-50 to 50 pixels) for
     the nameplate labels and for the target label, which also set the gap.
+    The nameplate labels start 20 pixels to the left; the target label at 0.
   - Resize the labels: a size slider (50% to 200%) for the nameplate labels
-    and one for the target label.
+    and one for the target label. The nameplate labels' 100% is twice their
+    old size; a size you chose before keeps its look.
 - **Pet taunt on**: Hunters and Warlocks get a message on screen and in chat
   when Growl, Torment, or Suffering is on autocast in a group where they are
   not the tank.

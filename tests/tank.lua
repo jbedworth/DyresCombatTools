@@ -415,7 +415,16 @@ local function fixture(options)
         end,
         CreateSlider = function(_, setting, sliderOptions, tooltip)
             setting.tooltip = tooltip
-            local initializer = {options = sliderOptions, InitFrame = function() end}
+            local initializer = {options = sliderOptions, InitFrame = function() end, setting = setting}
+            function initializer:AddModifyPredicate(predicate)
+                self.predicates = self.predicates or {}
+                self.predicates[#self.predicates + 1] = predicate
+            end
+            function initializer:AddEvaluateStateCVar(variable)
+                self.watched = self.watched or {}
+                self.watched[#self.watched + 1] = variable
+            end
+            setting.initializer = initializer
             state.sliders = state.sliders or {}
             state.sliders[setting.variable] = initializer
             return initializer
@@ -2261,8 +2270,12 @@ test("settings page: the threat sections, then Group Warnings, then Tank Tools",
         "LAYOUT", "DYRE_PULL",
         "## Swing Timer", "DYRE_SWING_SHOW", "DYRE_SWING_OPACITY_COMBAT", "DYRE_SWING_OPACITY_IDLE",
         "DYRE_SWING_IN_USE", "DYRE_SWING_RANGE", "DYRE_SWING_HOLD", "DYRE_SWING_CLIP", "DYRE_SWING_THEME"}, ",")
-        -- The Layout row only with Toolkit 2.18.0's button bars.
-        :gsub("LAYOUT,", state.toolkit.BAR_LAYOUT_VERSION and "DYRE_DYRESCOMBATTOOLS_TANKBAR_ORIENTATION," or ""), nil)
+        -- The Layout row only with Toolkit 2.18.0's button bars; the two
+        -- opacity rows under it only with Toolkit 2.19.0's bar opacity.
+        :gsub("LAYOUT,", state.toolkit.BAR_LAYOUT_VERSION and ("DYRE_DYRESCOMBATTOOLS_TANKBAR_ORIENTATION,"
+            .. (state.toolkit.BAR_OPACITY_VERSION
+                and "DYRE_DYRESCOMBATTOOLS_TANKBAR_OPACITY_OUT,DYRE_DYRESCOMBATTOOLS_TANKBAR_OPACITY_IN," or ""))
+            or ""), nil)
 end)
 
 -- John, 2026-11-15: "Each of the non-core ... features of DT need an
@@ -2756,21 +2769,79 @@ test("label offsets: sliders -50 to 50 with the number and the default mark, rep
         equal(slider.options[2], 50)
         equal(slider.options[3], 1, "whole pixels")
         equal(slider.options.formatter(-7), "-7 px")
-        equal(slider.dyreDefault.default, 0, "the gold mark at 0")
-        equal(state.settings[variable].default, 0)
+        -- John, 2026-11-27: the nameplate label 20 px further left by default.
+        local default = variable == "DYRE_PLATE_X" and -20 or 0
+        equal(slider.dyreDefault.default, default, variable .. ": the gold mark at its own default")
+        equal(state.settings[variable].default, default)
     end
     local db = state.env.DyresCombatToolsCharDB
-    equal(db.plateX, 12)
+    equal(db.plateX, 12, "a saved value stays")
     equal(db.plateY, -50, "clamped")
-    equal(db.targetX, 0, "not whole: 0")
-    equal(db.targetY, 0, "not a number: 0")
+    equal(db.targetX, 0, "not whole: its default, 0")
+    equal(db.targetY, 0, "not a number: its default, 0")
     state.settings.DYRE_PLATE_X:SetValue(99)
     equal(db.plateX, 50)
+    state.settings.DYRE_PLATE_X:SetValue("x")
+    equal(db.plateX, -20, "a bad value: the nameplate default")
+    state.settings.DYRE_TARGET_X:SetValue(0.5)
+    equal(db.targetX, 0, "a bad value: the target default")
+end)
+
+test("label defaults: a new character gets the nameplate label at -20 px and 100% (twice the old size)", function()
+    local state = fixture({db = {}})
+    local db = state.env.DyresCombatToolsCharDB
+    equal(db.platePlace, "left")
+    equal(db.plateX, -20)
+    equal(db.plateY, 0)
+    equal(db.plateScale, 100)
+    equal(db.scaleSaves, 1)
+    equal(db.targetX, 0)
+    equal(db.targetY, 0)
+    equal(db.targetScale, 100)
+    -- The profile's Defaults (an empty part through DCT's sanitize) and the
+    -- settings page's Defaults (each row set to its registered default).
+    local clean = state.ns.SanitizeDB({})
+    equal(clean.plateX, -20, "profile Defaults")
+    equal(clean.plateScale, 100, "profile Defaults")
+    equal(clean.targetX, 0)
+    equal(clean.targetScale, 100)
+    db.plateX, db.plateScale, db.targetScale = 10, 60, 250
+    for _, variable in ipairs({"DYRE_PLATE_X", "DYRE_PLATE_SCALE", "DYRE_TARGET_SCALE"}) do
+        local setting = state.settings[variable]
+        setting:SetValue(setting.default)
+    end
+    equal(db.plateX, -20, "settings Defaults")
+    equal(db.plateScale, 100, "settings Defaults")
+    equal(db.targetScale, 100, "settings Defaults")
+end)
+
+-- John, 2026-11-27: "The size it is now (200% bigger than the original)
+-- becomes 100%, slider stays the same, just the origin moves."
+test("label size: a save from before SCALE_SAVES keeps its look on the doubled nameplate base, once", function()
+    local state0 = fixture()
+    local cases = {
+        {saved = 100, want = 100, why = "the old default: the new, bigger default look"},
+        {saved = 200, want = 100, why = "John's 200%: the same look"},
+        {saved = 150, want = 75, why = "halved"},
+        {saved = 125, want = 63, why = "halved and rounded"},
+        {saved = 50, want = 50, why = "halved, then clamped to 50"},
+        {saved = "x", want = 100, why = "bad: the default"},
+    }
+    for _, case in ipairs(cases) do
+        local clean = state0.ns.SanitizeDB({plateScale = case.saved, targetScale = 150})
+        equal(clean.plateScale, case.want, tostring(case.saved) .. ": " .. case.why)
+        equal(clean.targetScale, 150, "the target label keeps its size")
+        equal(clean.scaleSaves, 1)
+        equal(state0.ns.SanitizeDB(clean).plateScale, case.want, "only once")
+    end
+    equal(state0.ns.SanitizeDB({plateScale = 150, scaleSaves = 1}).plateScale, 150, "a new save stays")
+    local state = fixture({db = {plateScale = 200}})
+    equal(state.env.DyresCombatToolsCharDB.plateScale, 100, "at login")
 end)
 
 test("label offsets add to every place, 0 keeps it, and shown labels move at once, also in combat", function()
     local state = fixture({toolkit = true, units = {target = true, nameplate3 = true}, group = {role = "DAMAGER"},
-        threat = {target = {false, 1, 90}}, db = {platePlace = "right", placeSaves = 1}})
+        threat = {target = {false, 1, 90}}, db = {platePlace = "right", placeSaves = 1, plateX = 0, plateScale = 50, scaleSaves = 1}})
     state.plates.nameplate3 = {bar = state.env.UIParent:CreateTexture()}
     state.threat.nameplate3 = {false, 1, 90}
     state.fire("NAME_PLATE_UNIT_ADDED", "nameplate3")
@@ -2802,9 +2873,11 @@ test("label offsets add to every place, 0 keeps it, and shown labels move at onc
 end)
 
 -- Size (John, 2026-11-13: "scale up or down, up to 100% (2x) it's default size").
+-- John, 2026-11-27: up to 300% ("even more obnoxiously large"), and the
+-- nameplate label at 200% by default.
 test("label size: sliders 50 to 200% with the number and the default mark, repaired when saved", function()
     local state = fixture({globals = {MinimalSliderWithSteppersMixin = {Label = {Right = "RIGHT"}}},
-        db = {plateScale = 250, targetScale = 1.5}})
+        db = {plateScale = 250, targetScale = 1.5, scaleSaves = 1}})
     for _, variable in ipairs({"DYRE_PLATE_SCALE", "DYRE_TARGET_SCALE"}) do
         local slider = state.sliders[variable]
         assert(slider, variable)
@@ -2823,18 +2896,19 @@ end)
 
 test("label size scales the label at once, also in combat, and keeps the gap and offsets in pixels", function()
     local state = fixture({toolkit = true, units = {target = true, nameplate3 = true}, group = {role = "DAMAGER"},
-        threat = {target = {false, 1, 90}}, db = {platePlace = "right", placeSaves = 1}})
+        threat = {target = {false, 1, 90}}, db = {platePlace = "right", placeSaves = 1, plateScale = 50,
+            scaleSaves = 1}})
     state.plates.nameplate3 = {bar = state.env.UIParent:CreateTexture()}
     state.threat.nameplate3 = {false, 1, 90}
     state.fire("NAME_PLATE_UNIT_ADDED", "nameplate3")
     state.fire("UNIT_THREAT_LIST_UPDATE", "target")
     local label = state.ns.ThreatLabels().nameplate3
-    equal(label.scale, 1, "100% by default")
+    equal(label.scale, 1, "50%: the old base size (the nameplate base is twice that)")
     state.combat = true
     state.settings.DYRE_PLATE_X:SetValue(6)
     state.settings.DYRE_PLATE_Y:SetValue(-4)
-    state.settings.DYRE_PLATE_SCALE:SetValue(200)
-    equal(label.scale, 2, "twice the size, at once, in combat")
+    state.settings.DYRE_PLATE_SCALE:SetValue(100)
+    equal(label.scale, 2, "100%: twice the old size, at once, in combat")
     equal(label.points[1][4], 5, "(4 px gap + 6) / 2: 10 screen pixels")
     equal(label.points[1][5], -2, "-4 / 2: -4 screen pixels")
     local target = TargetLabel(state)

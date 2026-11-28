@@ -157,10 +157,13 @@ test("the first login copies this character's settings from DyresToolkitCharDB, 
     local state = fixture({toolkitDb = source})
     local db = state.env.DyresCombatToolsCharDB
     for _, key in ipairs({"plateThreat", "threatMode", "platePlace", "plateX", "plateY", "targetX", "targetY",
-            "plateScale", "targetScale", "redSound", "losingSound", "soloSounds", "tankTools", "pullBars",
+            "targetScale", "redSound", "losingSound", "soloSounds", "tankTools", "pullBars",
             "petTaunt", "barMode", "pullDisplay", "pullTick", "pullGo", "pull"}) do
         equal(db[key], TOOLKIT_SAVE[key], key)
     end
+    -- The nameplate label's base doubled (John, 2026-11-27): the Toolkit's
+    -- 150% is the same look at 75%.
+    equal(db.plateScale, TOOLKIT_SAVE.plateScale / 2, "plateScale, on the new base")
     equal(db.markerOrder[1], 7, "marker order")
     equal(db.markerOrder[2], 8, "marker order")
     equal(type(db.bar.position), "table", "the tank bar's place (the widget may store it from its center)")
@@ -414,6 +417,36 @@ test("tank bar: a row or a column through the Toolkit's button bars, saved, with
     equal(row.predicates[1](), true)
     state.env.DyresCombatToolsCharDB.tankTools = false
     equal(row.predicates[1](), false, "greyed while Tank Tools is off")
+end)
+
+-- Bar opacity (Toolkit 2.19.0, BAR_OPACITY_VERSION 1; John, 2026-11-27): the
+-- Toolkit adds both rows under Layout and sets the bar's alpha; DCT only shows
+-- and hides the bar, so the two do not fight.
+test("tank bar: the Toolkit's opacity rows, greyed with Tank Tools, and DCT keeps its show rule", function()
+    local state = fixture({db = {barMode = "always"}})
+    local names = {"DYRE_DYRESCOMBATTOOLS_TANKBAR_OPACITY_OUT", "DYRE_DYRESCOMBATTOOLS_TANKBAR_OPACITY_IN"}
+    if not (state.toolkit.BAR_LAYOUT_VERSION and state.toolkit.BAR_OPACITY_VERSION) then
+        for _, name in ipairs(names) do
+            equal(state.settings[name], nil, "no opacity row without the feature")
+        end
+        return
+    end
+    for _, name in ipairs(names) do
+        local setting = state.settings[name]
+        assert(setting, name .. " in Tank Tools")
+        local row = setting.initializer
+        equal(row.watched[1], "DYRE_TANK_TOOLS", name .. " greyed with Tank Tools' Enable")
+        state.env.DyresCombatToolsCharDB.tankTools = true
+        equal(row.predicates[1](), true)
+        state.env.DyresCombatToolsCharDB.tankTools = false
+        equal(row.predicates[1](), false, name .. " greyed while Tank Tools is off")
+    end
+    state.env.DyresCombatToolsCharDB.tankTools = true
+    state.ns.RefreshBar()
+    local bar = state.ns.TankBarWidget()
+    equal(bar:IsShown(), true, "Always: the bar shows")
+    state.settings[names[2]]:SetValue(0)
+    equal(bar:IsShown(), true, "0% in combat changes the alpha, not DCT's show rule")
 end)
 
 test("tank bar: an older Toolkit keeps the row layout and shows no Layout row", function()
